@@ -17,9 +17,9 @@ export default function Home() {
   ]);
 
   const direction = [
-    [1, 0],
-    [0, 1],
     [-1, 0],
+    [0, 1],
+    [1, 0],
     [0, -1],
   ];
   //柱作る関数
@@ -57,12 +57,15 @@ export default function Home() {
         if (anotherbaord[y][x] === 1) {
           if (Counter >= 4) {
             const ram = Math.floor(Math.random() * (4 - 1) + 1);
+
             const dy_dx = direction[ram];
+            console.log(dy_dx);
             newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
           } else {
             const ram = Math.floor(Math.random() * 4);
-            console.log(ram);
             const dy_dx = direction[ram];
+            console.log(10);
+            console.log(dy_dx);
             newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
             Counter += 1;
           }
