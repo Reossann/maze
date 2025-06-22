@@ -24,7 +24,7 @@ export default function Home() {
   ];
   //柱作る関数
   const create = () => {
-    const newbaord = structuredClone([
+    const newbaord = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -34,9 +34,11 @@ export default function Home() {
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]);
+    ];
+    console.log(newbaord);
+    console.log(888);
 
-    const anotherbaord = structuredClone([
+    const anotherbaord = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -46,17 +48,28 @@ export default function Home() {
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]);
+    ];
+
+    let Counter = 0;
 
     for (let y = 0; y < 9; y++) {
       for (let x = 0; x < 9; x++) {
         if (anotherbaord[y][x] === 1) {
-          const ram = Math.floor(Math.random() * 4);
-          const dy_dx = direction[ram];
-          newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
+          if (Counter >= 4) {
+            const ram = Math.floor(Math.random() * (4 - 1) + 1);
+            const dy_dx = direction[ram];
+            newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
+          } else {
+            const ram = Math.floor(Math.random() * 4);
+            console.log(ram);
+            const dy_dx = direction[ram];
+            newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
+            Counter += 1;
+          }
         }
       }
     }
+    console.log(newbaord);
     setBoard(newbaord);
   };
 
@@ -69,7 +82,7 @@ export default function Home() {
             <div
               className={styles.cell}
               key={`${x}-${y}`}
-              style={{ background: color === 1 ? '#000' : '#fff' }}
+              style={{ background: color === 1 ? '#808080' : '#fff' }}
             />
           )),
         )}
