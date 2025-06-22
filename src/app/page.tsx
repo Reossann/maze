@@ -22,7 +22,7 @@ export default function Home() {
     [-1, 0],
     [0, -1],
   ];
-
+  //柱作る関数
   const create = () => {
     const newbaord = structuredClone([
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
