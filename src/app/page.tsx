@@ -107,14 +107,20 @@ export default function Home() {
     const Lsx = x - 1;
     const Usy = y - 1;
     const Dsy = y + 1;
-    setInterval(() => {
+    if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
+      console.log(20);
       if (newboard[y][x] === 2 && newboard[y][Rsx] === 0) {
         newboard[y][x] = 0;
         newboard[y][Rsx] = 2;
         console.log(100);
         return Go(y, Rsx, newboard);
+      } else {
+        console.log(80000);
+        newboard[y][x] = 3;
+        setBoard(newboard);
+        return;
       }
-    }, 200);
+    }
     setBoard(newboard);
   };
 
