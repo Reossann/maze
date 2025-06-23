@@ -5,7 +5,7 @@ import styles from './page.module.css';
 
 export default function Home() {
   const [board, setBoard] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -25,7 +25,7 @@ export default function Home() {
   //柱作る関数
   const create = () => {
     const newbaord = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [2, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -90,9 +90,45 @@ export default function Home() {
     setBoard(newbaord);
   };
 
+  const ovserveL = () => {
+    const newbaro = structuredClone(board);
+    console.log(newbaro[0][0]);
+    newbaro[0][0] += 1;
+    if (newbaro[0][0] === 6) {
+      newbaro[0][0] = 2;
+    }
+    console.log(newbaro);
+    setBoard(newbaro);
+  };
+
+  const Go = (y: number, x: number, board: number[][]) => {
+    const newboard = structuredClone(board);
+    const Rsx = x + 1;
+    const Lsx = x - 1;
+    const Usy = y - 1;
+    const Dsy = y + 1;
+    setInterval(() => {
+      if (newboard[y][x] === 2 && newboard[y][Rsx] === 0) {
+        newboard[y][x] = 0;
+        newboard[y][Rsx] = 2;
+        console.log(100);
+        return Go(y, Rsx, newboard);
+      }
+    }, 200);
+    setBoard(newboard);
+  };
+
   return (
     <div className={styles.container}>
-      <div onClick={create}>ルーレット</div>
+      <div className={styles.flame} onClick={create}>
+        ルーレット
+      </div>
+      <div className={styles.flame} onClick={ovserveL}>
+        方向変換
+      </div>
+      <div className={styles.flame} onClick={() => Go(0, 0, board)}>
+        GO!!!!
+      </div>
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (
@@ -100,7 +136,24 @@ export default function Home() {
               className={styles.cell}
               key={`${x}-${y}`}
               style={{ background: color === 1 ? '#808080' : '#fff' }}
-            />
+            >
+              {color !== 1 && (
+                <div
+                  className={styles.traiangle}
+                  style={{
+                    background: color >= 2 ? '#f00' : '#fff',
+                    clipPath:
+                      color === 2
+                        ? 'polygon(0 0, 0 100%, 100% 50%)'
+                        : color === 3
+                          ? 'polygon(0 0, 100% 0%, 50% 100%)'
+                          : color === 4
+                            ? 'polygon(100% 0, 0 50%, 100% 100%)'
+                            : 'polygon(0 100%, 50% 0, 100% 100%)',
+                  }}
+                />
+              )}
+            </div>
           )),
         )}
       </div>

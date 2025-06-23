@@ -24,3 +24,38 @@
   height: 60px;
   border: 1px solid black;
 }
+
+.traiangle {
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+/* .triangle {うえ
+  display: inline-block;
+  width: 120px;
+  height: 80px;
+  background: #ff0000;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+} */
+
+/* .triangle {みぎ
+  display: inline-block;
+  width: 120px;
+  height: 80px;
+  background: #ff0000;
+clip-path: polygon(0 0, 0 100%, 100% 50%);
+} */
+
+/* .triangle {ひだり
+  display: inline-block;
+  width: 120px;
+  height: 80px;
+  background: #ff0000;
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+} */
+
+.flame {
+  margin: 5px;
+  border: 2px solid red;
+}
