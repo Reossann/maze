@@ -33,10 +33,8 @@ export default function Home() {
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 8],
     ];
-    console.log(newbaord);
-    console.log(888);
 
     const anotherbaord = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -63,7 +61,6 @@ export default function Home() {
               const dy_dx = direction[ram];
               console.log(dy_dx);
               if (newbaord[y + dy_dx[0]][x + dy_dx[1]] === 1) {
-                console.log(999);
                 continue;
               }
               newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
@@ -107,20 +104,98 @@ export default function Home() {
     const Lsx = x - 1;
     const Usy = y - 1;
     const Dsy = y + 1;
-    if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
-      console.log(20);
-      if (newboard[y][x] === 2 && newboard[y][Rsx] === 0) {
-        newboard[y][x] = 0;
-        newboard[y][Rsx] = 2;
-        console.log(100);
+    if (newboard[y][x] === 8) {
+      alert('ごおおーる');
+      return;
+    }
+    if (newboard[y][x] === 2) {
+      if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 8) {
         return Go(y, Rsx, newboard);
+      }
+      if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
+        if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 0) {
+          newboard[y][x] = 0;
+          newboard[y][Rsx] = 2;
+          console.log('右');
+          return Go(y, Rsx, newboard);
+        } else {
+          newboard[y][x] = 3;
+          return Go(y, x, newboard);
+        }
       } else {
-        console.log(80000);
-        newboard[y][x] = 3;
-        setBoard(newboard);
-        return;
+        //切り返した残像が残る
+        newboard[y][x] = 0;
+        newboard[Usy][x] = 5;
+        return Go(Usy, x, newboard);
       }
     }
+    if (newboard[y][x] === 3) {
+      if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 8) {
+        return Go(Dsy, x, newboard);
+      }
+      if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === 1) {
+        if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 0) {
+          newboard[y][x] = 0;
+          newboard[Dsy][x] = 3;
+          console.log('下');
+          return Go(Dsy, x, newboard);
+        } else {
+          newboard[y][x] = 4;
+
+          return Go(y, x, newboard);
+        }
+      } else {
+        //切り返した残像が残る
+        newboard[y][x] = 0;
+        newboard[y][Rsx] = 2;
+        return Go(y, Rsx, newboard);
+      }
+    }
+    if (newboard[y][x] === 4) {
+      if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 8) {
+        return Go(y, Lsx, newboard);
+      }
+      if (newboard[Dsy] === undefined || newboard[Dsy][x] === 1) {
+        if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 0) {
+          newboard[y][x] = 0;
+          newboard[y][Lsx] = 4;
+          console.log('左');
+          return Go(y, Lsx, newboard);
+        } else {
+          newboard[y][x] = 5;
+          return Go(y, x, newboard);
+        }
+      } else {
+        //切り返した残像が残る
+        newboard[y][x] = 0;
+        newboard[Dsy][x] = 3;
+        return Go(Dsy, x, newboard);
+      }
+    }
+    if (newboard[y][x] === 5) {
+      if (newboard[Usy] !== undefined && newboard[Usy][x] === 8) {
+        return Go(Usy, x, newboard);
+      }
+      if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === 1) {
+        if (newboard[Usy] !== undefined && newboard[Usy][x] === 0) {
+          newboard[y][x] = 0;
+          newboard[Usy][x] = 5;
+          console.log('上');
+          return Go(Usy, x, newboard);
+        } else {
+          newboard[y][x] = 2;
+          setBoard(newboard);
+          return Go(y, x, newboard);
+        }
+      } else {
+        //切り返した残像が残る
+        newboard[y][x] = 0;
+        newboard[y][Lsx] = 4;
+        return Go(y, Lsx, newboard);
+      }
+    }
+    console.log(1000);
+    console.log(newboard);
     setBoard(newboard);
   };
 
@@ -141,7 +216,7 @@ export default function Home() {
             <div
               className={styles.cell}
               key={`${x}-${y}`}
-              style={{ background: color === 1 ? '#808080' : '#fff' }}
+              style={{ background: color === 1 ? '#808080' : color === 8 ? '#ff0909' : '#fff' }}
             >
               {color !== 1 && (
                 <div
