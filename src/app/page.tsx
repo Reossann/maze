@@ -87,17 +87,6 @@ export default function Home() {
     setBoard(newbaord);
   };
 
-  const ovserveL = () => {
-    const newbaro = structuredClone(board);
-    console.log(newbaro[0][0]);
-    newbaro[0][0] += 1;
-    if (newbaro[0][0] === 6) {
-      newbaro[0][0] = 2;
-    }
-    console.log(newbaro);
-    setBoard(newbaro);
-  };
-
   const Go = (y: number, x: number, board: number[][]) => {
     const newboard = structuredClone(board);
     const Rsx = x + 1;
@@ -106,10 +95,13 @@ export default function Home() {
     const Dsy = y + 1;
     if (newboard[y][x] === 8) {
       alert('ごおおーる');
+      newboard[y][x] = 10;
+      setBoard(newboard);
       return;
-    }
+    } //右向き
     if (newboard[y][x] === 2) {
       if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 8) {
+        newboard[y][x] = 0;
         return Go(y, Rsx, newboard);
       }
       if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
@@ -123,14 +115,14 @@ export default function Home() {
           return Go(y, x, newboard);
         }
       } else {
-        //切り返した残像が残る
         newboard[y][x] = 0;
         newboard[Usy][x] = 5;
         return Go(Usy, x, newboard);
       }
-    }
+    } //下向き
     if (newboard[y][x] === 3) {
       if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 8) {
+        newboard[y][x] = 0;
         return Go(Dsy, x, newboard);
       }
       if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === 1) {
@@ -145,14 +137,14 @@ export default function Home() {
           return Go(y, x, newboard);
         }
       } else {
-        //切り返した残像が残る
         newboard[y][x] = 0;
         newboard[y][Rsx] = 2;
         return Go(y, Rsx, newboard);
       }
-    }
+    } //左向き
     if (newboard[y][x] === 4) {
       if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 8) {
+        newboard[y][x] = 0;
         return Go(y, Lsx, newboard);
       }
       if (newboard[Dsy] === undefined || newboard[Dsy][x] === 1) {
@@ -166,14 +158,14 @@ export default function Home() {
           return Go(y, x, newboard);
         }
       } else {
-        //切り返した残像が残る
         newboard[y][x] = 0;
         newboard[Dsy][x] = 3;
         return Go(Dsy, x, newboard);
       }
-    }
+    } //上向き
     if (newboard[y][x] === 5) {
       if (newboard[Usy] !== undefined && newboard[Usy][x] === 8) {
+        newboard[y][x] = 0;
         return Go(Usy, x, newboard);
       }
       if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === 1) {
@@ -184,11 +176,9 @@ export default function Home() {
           return Go(Usy, x, newboard);
         } else {
           newboard[y][x] = 2;
-          setBoard(newboard);
           return Go(y, x, newboard);
         }
       } else {
-        //切り返した残像が残る
         newboard[y][x] = 0;
         newboard[y][Lsx] = 4;
         return Go(y, Lsx, newboard);
@@ -196,16 +186,12 @@ export default function Home() {
     }
     console.log(1000);
     console.log(newboard);
-    setBoard(newboard);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.flame} onClick={create}>
         ルーレット
-      </div>
-      <div className={styles.flame} onClick={ovserveL}>
-        方向変換
       </div>
       <div className={styles.flame} onClick={() => Go(0, 0, board)}>
         GO!!!!
@@ -216,7 +202,16 @@ export default function Home() {
             <div
               className={styles.cell}
               key={`${x}-${y}`}
-              style={{ background: color === 1 ? '#808080' : color === 8 ? '#ff0909' : '#fff' }}
+              style={{
+                background:
+                  color === 1
+                    ? '#808080'
+                    : color === 8
+                      ? '#ff0909'
+                      : color === 10
+                        ? '#0000ff'
+                        : '#fff',
+              }}
             >
               {color !== 1 && (
                 <div
@@ -224,7 +219,7 @@ export default function Home() {
                   style={{
                     background: color >= 2 ? '#f00' : '#fff',
                     clipPath:
-                      color === 2
+                      color === 2 || color === 10
                         ? 'polygon(0 0, 0 100%, 100% 50%)'
                         : color === 3
                           ? 'polygon(0 0, 100% 0%, 50% 100%)'
