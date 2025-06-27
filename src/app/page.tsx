@@ -1,9 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import styles from './page.module.css';
 
+const Directions = {
+  UP: 2,
+  RIGHT: 3,
+  DOWN: 4,
+  LEFT: 5,
+};
+
+const GOAL = 8;
+const WALL = 1;
+const EMPTY = 0;
 export default function Home() {
+  const [isRunning, setisRunning] = useState(false);
+
+  const restoreID = useRef(false);
+
+  const delay = 500;
+
   const [board, setBoard] = useState([
     [2, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -22,6 +38,19 @@ export default function Home() {
     [1, 0],
     [0, -1],
   ];
+
+  const findMover = () => {
+    for (let y = 0; y < 9; y++) {
+      for (let x = 0; x < 9; x++) {
+        const cell = board[y][x];
+        if (cell >= Directions.RIGHT && cell <= Directions.UP) {
+          return { y, x };
+        }
+      }
+    }
+    return null; // 駒が見つからない
+  };
+
   //柱作る関数
   const create = () => {
     const newbaord = [
@@ -87,105 +116,106 @@ export default function Home() {
     setBoard(newbaord);
   };
 
-  const Go = (y: number, x: number, board: number[][]) => {
+  const Go = useCallback(() => {
+    const moverPos = findMover();
+    if (!moverPos) {
+      setisRunning(false);
+      return;
+    }
+    const { y, x } = moverPos;
+    const newBoard = structuredClone(board);
+
+    let shouldContinue = true;
+
+    const nextAction = () => Go();
+
     const newboard = structuredClone(board);
     const Rsx = x + 1;
     const Lsx = x - 1;
     const Usy = y - 1;
     const Dsy = y + 1;
-    if (newboard[y][x] === 8) {
+
+    if (newboard[y][x] === GOAL) {
       alert('ごおおーる');
       newboard[y][x] = 10;
-      setBoard(newboard);
-      return;
+      shouldContinue = false;
     } //右向き
-    if (newboard[y][x] === 2) {
+    else if (newboard[y][x] === 2) {
       if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 8) {
         newboard[y][x] = 0;
-        return Go(y, Rsx, newboard);
-      }
-      if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
+      } else if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
         if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 0) {
           newboard[y][x] = 0;
           newboard[y][Rsx] = 2;
           console.log('右');
-          return Go(y, Rsx, newboard);
         } else {
           newboard[y][x] = 3;
-          return Go(y, x, newboard);
         }
       } else {
         newboard[y][x] = 0;
         newboard[Usy][x] = 5;
-        return Go(Usy, x, newboard);
       }
     } //下向き
     if (newboard[y][x] === 3) {
       if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 8) {
         newboard[y][x] = 0;
-        return Go(Dsy, x, newboard);
       }
       if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === 1) {
         if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 0) {
           newboard[y][x] = 0;
           newboard[Dsy][x] = 3;
           console.log('下');
-          return Go(Dsy, x, newboard);
         } else {
           newboard[y][x] = 4;
-
-          return Go(y, x, newboard);
         }
       } else {
         newboard[y][x] = 0;
         newboard[y][Rsx] = 2;
-        return Go(y, Rsx, newboard);
       }
     } //左向き
     if (newboard[y][x] === 4) {
       if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 8) {
         newboard[y][x] = 0;
-        return Go(y, Lsx, newboard);
       }
       if (newboard[Dsy] === undefined || newboard[Dsy][x] === 1) {
         if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 0) {
           newboard[y][x] = 0;
           newboard[y][Lsx] = 4;
           console.log('左');
-          return Go(y, Lsx, newboard);
         } else {
           newboard[y][x] = 5;
-          return Go(y, x, newboard);
         }
       } else {
         newboard[y][x] = 0;
         newboard[Dsy][x] = 3;
-        return Go(Dsy, x, newboard);
       }
     } //上向き
     if (newboard[y][x] === 5) {
       if (newboard[Usy] !== undefined && newboard[Usy][x] === 8) {
         newboard[y][x] = 0;
-        return Go(Usy, x, newboard);
       }
       if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === 1) {
         if (newboard[Usy] !== undefined && newboard[Usy][x] === 0) {
           newboard[y][x] = 0;
           newboard[Usy][x] = 5;
           console.log('上');
-          return Go(Usy, x, newboard);
         } else {
           newboard[y][x] = 2;
-          return Go(y, x, newboard);
         }
       } else {
         newboard[y][x] = 0;
         newboard[y][Lsx] = 4;
-        return Go(y, Lsx, newboard);
       }
     }
     console.log(1000);
     console.log(newboard);
+  }, [board, delay]);
+
+  const GoON = () => {
+    if (isRunning) return;
+    setisRunning(true);
+    // 最初のtickを予約してループを開始
+    restoreID.current = setTimeout(Go, delay);
   };
 
   return (
@@ -193,7 +223,7 @@ export default function Home() {
       <div className={styles.flame} onClick={create}>
         ルーレット
       </div>
-      <div className={styles.flame} onClick={() => Go(0, 0, board)}>
+      <div className={styles.flame} onClick={() => Go()}>
         GO!!!!
       </div>
       <div className={styles.board}>
