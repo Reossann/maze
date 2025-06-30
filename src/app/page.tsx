@@ -20,7 +20,7 @@ const findMover = (currentboard: number[][]) => {
     for (let x = 0; x < 9; x++) {
       const cell = currentboard[y][x];
       console.log(cell);
-      if (2 <= cell && cell <= 5) {
+      if ((2 <= cell && cell <= 5) || cell === 10) {
         return { y, x };
       }
     }
@@ -31,8 +31,9 @@ export default function Home() {
   const [IsRunning, setIsRunning] = useState(false);
 
   const timerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [Reset, setReset] = useState(false);
 
-  const delay = 500;
+  const delay = 200;
 
   const initialB = [
     [2, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -57,6 +58,8 @@ export default function Home() {
 
   //柱作る関数
   const create = () => {
+    setIsRunning(false);
+    setReset(true);
     const newbaord = [
       [2, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -121,7 +124,6 @@ export default function Home() {
   };
 
   useEffect(() => {
-    console.log(8000);
     if (!IsRunning) {
       return;
     }
@@ -139,16 +141,17 @@ export default function Home() {
         const Usy = y - 1;
         const Dsy = y + 1;
 
-        if (newboard[y][x] === GOAL) {
-          alert('ごおおーる');
-          newboard[y][x] = 10;
+        if (newboard[y][x] === GOAL + 2) {
           setIsRunning(false);
         } //右向き
         else if (newboard[y][x] === Directions.RIGHT) {
           console.log(1000);
           //newboard[y]?.[Rsx] === GOALという書き方もある
           if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === GOAL) {
+            alert('ごおおーる');
+            setIsRunning(false);
             newboard[y][x] = EMPTY;
+            newboard[y][Rsx] += 2;
           } else if (newboard[Usy] === undefined || newboard[Usy][x] === WALL) {
             if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === EMPTY) {
               newboard[y][x] = EMPTY;
@@ -164,9 +167,11 @@ export default function Home() {
         } //下向き
         else if (newboard[y][x] === Directions.DOWN) {
           if (newboard[Dsy] !== undefined && newboard[Dsy][x] === GOAL) {
+            alert('ごおおーる');
+            setIsRunning(false);
             newboard[y][x] = EMPTY;
-          }
-          if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === WALL) {
+            newboard[Dsy][x] += 2;
+          } else if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === WALL) {
             if (newboard[Dsy] !== undefined && newboard[Dsy][x] === EMPTY) {
               newboard[y][x] = EMPTY;
               newboard[Dsy][x] = Directions.DOWN;
@@ -181,9 +186,11 @@ export default function Home() {
         } //左向き
         else if (newboard[y][x] === Directions.LEFT) {
           if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === GOAL) {
+            alert('ごおおーる');
+            setIsRunning(false);
             newboard[y][x] = EMPTY;
-          }
-          if (newboard[Dsy] === undefined || newboard[Dsy][x] === WALL) {
+            newboard[y][Lsx] += 2;
+          } else if (newboard[Dsy] === undefined || newboard[Dsy][x] === WALL) {
             if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === EMPTY) {
               newboard[y][x] = EMPTY;
               newboard[y][Lsx] = Directions.LEFT;
@@ -198,9 +205,11 @@ export default function Home() {
         } //上向き
         else if (newboard[y][x] === Directions.UP) {
           if (newboard[Usy] !== undefined && newboard[Usy][x] === GOAL) {
+            alert('ごおおーる');
+            setIsRunning(false);
             newboard[y][x] = EMPTY;
-          }
-          if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === WALL) {
+            newboard[Usy][x] += 2;
+          } else if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === WALL) {
             if (newboard[Usy] !== undefined && newboard[Usy][x] === EMPTY) {
               newboard[y][x] = EMPTY;
               newboard[Usy][x] = Directions.UP;
@@ -226,6 +235,13 @@ export default function Home() {
     console.log(1000);
     setIsRunning(true);
   };
+
+  useEffect(() => {
+    if (Reset) {
+      alert('迷路生成中。。。');
+      setReset(false);
+    }
+  }, [Reset]);
 
   return (
     <div className={styles.container}>
