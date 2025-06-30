@@ -1,26 +1,40 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './page.module.css';
 
 const Directions = {
-  UP: 2,
-  RIGHT: 3,
-  DOWN: 4,
-  LEFT: 5,
+  RIGHT: 2,
+  DOWN: 3,
+  LEFT: 4,
+  UP: 5,
 };
 
 const GOAL = 8;
 const WALL = 1;
 const EMPTY = 0;
-export default function Home() {
-  const [isRunning, setisRunning] = useState(false);
 
-  const restoreID = useRef(false);
+const findMover = (currentboard: number[][]) => {
+  console.log(currentboard);
+  for (let y = 0; y < 9; y++) {
+    for (let x = 0; x < 9; x++) {
+      const cell = currentboard[y][x];
+      console.log(cell);
+      if (2 <= cell && cell <= 5) {
+        return { y, x };
+      }
+    }
+  }
+  return null; // 駒が見つからない
+};
+export default function Home() {
+  const [IsRunning, setIsRunning] = useState(false);
+
+  const timerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const delay = 500;
 
-  const [board, setBoard] = useState([
+  const initialB = [
     [2, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -30,7 +44,9 @@ export default function Home() {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 0, 1, 0, 1, 0, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  ];
+
+  const [Board, setBoard] = useState(initialB);
 
   const direction = [
     [-1, 0],
@@ -38,18 +54,6 @@ export default function Home() {
     [1, 0],
     [0, -1],
   ];
-
-  const findMover = () => {
-    for (let y = 0; y < 9; y++) {
-      for (let x = 0; x < 9; x++) {
-        const cell = board[y][x];
-        if (cell >= Directions.RIGHT && cell <= Directions.UP) {
-          return { y, x };
-        }
-      }
-    }
-    return null; // 駒が見つからない
-  };
 
   //柱作る関数
   const create = () => {
@@ -116,106 +120,111 @@ export default function Home() {
     setBoard(newbaord);
   };
 
-  const Go = useCallback(() => {
-    const moverPos = findMover();
-    if (!moverPos) {
-      setisRunning(false);
+  useEffect(() => {
+    console.log(8000);
+    if (!IsRunning) {
       return;
     }
-    const { y, x } = moverPos;
-    const newBoard = structuredClone(board);
-
-    let shouldContinue = true;
-
-    const nextAction = () => Go();
-
-    const newboard = structuredClone(board);
-    const Rsx = x + 1;
-    const Lsx = x - 1;
-    const Usy = y - 1;
-    const Dsy = y + 1;
-
-    if (newboard[y][x] === GOAL) {
-      alert('ごおおーる');
-      newboard[y][x] = 10;
-      shouldContinue = false;
-    } //右向き
-    else if (newboard[y][x] === 2) {
-      if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 8) {
-        newboard[y][x] = 0;
-      } else if (newboard[Usy] === undefined || newboard[Usy][x] === 1) {
-        if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === 0) {
-          newboard[y][x] = 0;
-          newboard[y][Rsx] = 2;
-          console.log('右');
-        } else {
-          newboard[y][x] = 3;
+    const timerId = setTimeout(() => {
+      setBoard((prevBoard) => {
+        const moverPos = findMover(prevBoard);
+        if (!moverPos) {
+          setIsRunning(false);
+          return prevBoard;
         }
-      } else {
-        newboard[y][x] = 0;
-        newboard[Usy][x] = 5;
-      }
-    } //下向き
-    if (newboard[y][x] === 3) {
-      if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 8) {
-        newboard[y][x] = 0;
-      }
-      if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === 1) {
-        if (newboard[Dsy] !== undefined && newboard[Dsy][x] === 0) {
-          newboard[y][x] = 0;
-          newboard[Dsy][x] = 3;
-          console.log('下');
-        } else {
-          newboard[y][x] = 4;
+        const newboard = structuredClone(prevBoard);
+        const { y, x } = moverPos;
+        const Rsx = x + 1;
+        const Lsx = x - 1;
+        const Usy = y - 1;
+        const Dsy = y + 1;
+
+        if (newboard[y][x] === GOAL) {
+          alert('ごおおーる');
+          newboard[y][x] = 10;
+          setIsRunning(false);
+        } //右向き
+        else if (newboard[y][x] === Directions.RIGHT) {
+          console.log(1000);
+          //newboard[y]?.[Rsx] === GOALという書き方もある
+          if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === GOAL) {
+            newboard[y][x] = EMPTY;
+          } else if (newboard[Usy] === undefined || newboard[Usy][x] === WALL) {
+            if (newboard[y][Rsx] !== undefined && newboard[y][Rsx] === EMPTY) {
+              newboard[y][x] = EMPTY;
+              newboard[y][Rsx] = Directions.RIGHT;
+              console.log('右');
+            } else {
+              newboard[y][x] = Directions.DOWN;
+            }
+          } else {
+            newboard[y][x] = EMPTY;
+            newboard[Usy][x] = Directions.UP;
+          }
+        } //下向き
+        else if (newboard[y][x] === Directions.DOWN) {
+          if (newboard[Dsy] !== undefined && newboard[Dsy][x] === GOAL) {
+            newboard[y][x] = EMPTY;
+          }
+          if (newboard[y][Rsx] === undefined || newboard[y][Rsx] === WALL) {
+            if (newboard[Dsy] !== undefined && newboard[Dsy][x] === EMPTY) {
+              newboard[y][x] = EMPTY;
+              newboard[Dsy][x] = Directions.DOWN;
+              console.log('下');
+            } else {
+              newboard[y][x] = Directions.LEFT;
+            }
+          } else {
+            newboard[y][x] = EMPTY;
+            newboard[y][Rsx] = Directions.RIGHT;
+          }
+        } //左向き
+        else if (newboard[y][x] === Directions.LEFT) {
+          if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === GOAL) {
+            newboard[y][x] = EMPTY;
+          }
+          if (newboard[Dsy] === undefined || newboard[Dsy][x] === WALL) {
+            if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === EMPTY) {
+              newboard[y][x] = EMPTY;
+              newboard[y][Lsx] = Directions.LEFT;
+              console.log('左');
+            } else {
+              newboard[y][x] = Directions.UP;
+            }
+          } else {
+            newboard[y][x] = EMPTY;
+            newboard[Dsy][x] = Directions.DOWN;
+          }
+        } //上向き
+        else if (newboard[y][x] === Directions.UP) {
+          if (newboard[Usy] !== undefined && newboard[Usy][x] === GOAL) {
+            newboard[y][x] = EMPTY;
+          }
+          if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === WALL) {
+            if (newboard[Usy] !== undefined && newboard[Usy][x] === EMPTY) {
+              newboard[y][x] = EMPTY;
+              newboard[Usy][x] = Directions.UP;
+              console.log('上');
+            } else {
+              newboard[y][x] = Directions.RIGHT;
+            }
+          } else {
+            newboard[y][x] = EMPTY;
+            newboard[y][Lsx] = Directions.LEFT;
+          }
         }
-      } else {
-        newboard[y][x] = 0;
-        newboard[y][Rsx] = 2;
-      }
-    } //左向き
-    if (newboard[y][x] === 4) {
-      if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 8) {
-        newboard[y][x] = 0;
-      }
-      if (newboard[Dsy] === undefined || newboard[Dsy][x] === 1) {
-        if (newboard[y][Lsx] !== undefined && newboard[y][Lsx] === 0) {
-          newboard[y][x] = 0;
-          newboard[y][Lsx] = 4;
-          console.log('左');
-        } else {
-          newboard[y][x] = 5;
-        }
-      } else {
-        newboard[y][x] = 0;
-        newboard[Dsy][x] = 3;
-      }
-    } //上向き
-    if (newboard[y][x] === 5) {
-      if (newboard[Usy] !== undefined && newboard[Usy][x] === 8) {
-        newboard[y][x] = 0;
-      }
-      if (newboard[y][Lsx] === undefined || newboard[y][Lsx] === 1) {
-        if (newboard[Usy] !== undefined && newboard[Usy][x] === 0) {
-          newboard[y][x] = 0;
-          newboard[Usy][x] = 5;
-          console.log('上');
-        } else {
-          newboard[y][x] = 2;
-        }
-      } else {
-        newboard[y][x] = 0;
-        newboard[y][Lsx] = 4;
-      }
-    }
-    console.log(1000);
-    console.log(newboard);
-  }, [board, delay]);
+        return newboard;
+      });
+    }, delay);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [IsRunning, Board, delay]);
 
   const GoON = () => {
-    if (isRunning) return;
-    setisRunning(true);
-    // 最初のtickを予約してループを開始
-    restoreID.current = setTimeout(Go, delay);
+    console.log(1000);
+    setIsRunning(true);
   };
 
   return (
@@ -223,11 +232,11 @@ export default function Home() {
       <div className={styles.flame} onClick={create}>
         ルーレット
       </div>
-      <div className={styles.flame} onClick={() => Go()}>
+      <div className={styles.flame} onClick={GoON}>
         GO!!!!
       </div>
       <div className={styles.board}>
-        {board.map((row, y) =>
+        {Board.map((row, y) =>
           row.map((color, x) => (
             <div
               className={styles.cell}
