@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 const Directions = {
@@ -16,8 +16,8 @@ const EMPTY = 0;
 
 const findMover = (currentboard: number[][]) => {
   console.log(currentboard);
-  for (let y = 0; y < 9; y++) {
-    for (let x = 0; x < 9; x++) {
+  for (let y = 0; y < 11; y++) {
+    for (let x = 0; x < 11; x++) {
       const cell = currentboard[y][x];
       console.log(cell);
       if ((2 <= cell && cell <= 5) || cell === 10) {
@@ -29,22 +29,22 @@ const findMover = (currentboard: number[][]) => {
 };
 export default function Home() {
   const [IsRunning, setIsRunning] = useState(false);
-
-  const timerIdRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [Reset, setReset] = useState(false);
 
   const delay = 200;
 
   const initialB = [
-    [2, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
   const [Board, setBoard] = useState(initialB);
@@ -60,35 +60,39 @@ export default function Home() {
   const create = () => {
     setIsRunning(false);
     setReset(true);
-    const newbaord = [
-      [2, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 8],
+    const newboard = [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8],
     ];
 
-    const anotherbaord = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 0, 1, 0, 1, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    const anotherboard = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
     let Counter = 0;
 
-    for (let y = 0; y < 9; y++) {
-      for (let x = 0; x < 9; x++) {
-        if (anotherbaord[y][x] === 1) {
+    for (let y = 0; y < 11; y++) {
+      for (let x = 0; x < 11; x++) {
+        if (anotherboard[y][x] === 1) {
           let Notrapped = 0;
           do {
             if (Counter >= 4) {
@@ -96,10 +100,10 @@ export default function Home() {
 
               const dy_dx = direction[ram];
               console.log(dy_dx);
-              if (newbaord[y + dy_dx[0]][x + dy_dx[1]] === 1) {
+              if (newboard[y + dy_dx[0]][x + dy_dx[1]] === 1) {
                 continue;
               }
-              newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
+              newboard[y + dy_dx[0]][x + dy_dx[1]] = 1;
 
               Notrapped += 1;
             } else {
@@ -107,11 +111,11 @@ export default function Home() {
               const dy_dx = direction[ram];
               console.log(10);
               console.log(dy_dx);
-              if (newbaord[y + dy_dx[0]][x + dy_dx[1]] === 1) {
+              if (newboard[y + dy_dx[0]][x + dy_dx[1]] === 1) {
                 console.log(999);
                 continue;
               }
-              newbaord[y + dy_dx[0]][x + dy_dx[1]] = 1;
+              newboard[y + dy_dx[0]][x + dy_dx[1]] = 1;
               Notrapped += 1;
               Counter += 1;
             }
@@ -119,8 +123,8 @@ export default function Home() {
         }
       }
     }
-    console.log(newbaord);
-    setBoard(newbaord);
+    console.log(newboard);
+    setBoard(newboard);
   };
 
   useEffect(() => {
