@@ -14,6 +14,15 @@ const GOAL = 8;
 const WALL = 1;
 const EMPTY = 0;
 
+// const CreateMap = (x:number,y:number)=> {
+//   const M = [];
+//   for (let xs = 0; xs < x; xs++){
+//     for (let ys = 0 ;ys < y; xs++){
+
+//     }
+//   }
+// };
+
 const findMover = (currentboard: number[][]) => {
   console.log(currentboard);
   for (let y = 0; y < 11; y++) {
