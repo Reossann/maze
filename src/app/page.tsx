@@ -23,6 +23,21 @@ const EMPTY = 0;
 //   }
 // };
 
+// const CreateMap = (x, y) => {
+//   const M = []; // 盤面全体を格納する配列
+//   for (let xs = 0; xs < x; xs++) {
+//     const row = []; // 1行分のデータを格納する配列
+//     // 内側のループのインクリメントを ys++ に修正
+//     for (let ys = 0; ys < y; ys++) {
+//       // ここに盤面の各マス（セル）に入れるデータを設定します
+//       // 例として、すべてのセルに 0 を入れます
+//       row.push(0);
+//     }
+//     M.push(row); // 完成した1行を盤面に追加
+//   }
+//   return M; // 作成した盤面を返す
+// };
+
 const findMover = (currentboard: number[][]) => {
   console.log(currentboard);
   for (let y = 0; y < 11; y++) {
